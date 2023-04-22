@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.19
+# v0.19.22
 
 using Markdown
 using InteractiveUtils
@@ -52,7 +52,7 @@ md" ### Gráficas bidimensionales
 "
 
 # ╔═╡ 67c22c14-24a6-4080-803b-fba2be7d0fa4
-plot(sin,0:2π) # Grafica "sin" en el rango 0:2π
+plot(sin,0:2π) # Grafica "sin" en el rango 0:2
 
 # ╔═╡ 22a9aee4-4c6d-47d3-8cca-e41e542a84ed
 md"""
@@ -163,7 +163,7 @@ La única diferencia entre las dos figuras anteriores es el color de cada gráfi
 
 # ╔═╡ d0ec9526-1bf9-4e38-be43-9aeedc56e97e
 begin
-	plot(sin,0:0.25:2π, title = "plot y scatter", xlabel = "x", ylabel = "sin(x)", color = "darkorange", label = "plot")
+	plot(sin,0:0.25:2π, title = "plot y scatter", xlabel = "x", ylabel = L"\sin(x)", color = "darkorange", label = "plot")
     scatter!(sin,0:0.25:2π, color = "green", label = "scatter", marker = :diamond)
 end
 
@@ -361,7 +361,8 @@ Por ejemplo:
 """
 
 # ╔═╡ 56c967bd-feb0-4266-8209-3c97379152b1
-surface(R,R,h, color = :gist_rainbow)
+surface(R,R,h, color = :gist_rainbow, xlabel = "x", ylabel = "y", zlabel = "z")
+
 
 # ╔═╡ 8eefdb22-91ad-494b-979a-d3b2a17f706e
 md"Para representar esta superficie como una _malla_ creada a partir de los puntos de la forma `[x[i],y[i]]` en los que se evalúa la función `h`, podemos usar la función `wireframe` con la misma sintáxis que `surface`:"
@@ -476,8 +477,38 @@ md"""**Ejercicio** Haz un código donde definas cuatro variables `h`, `r`, `θ` 
 
 Sugerencia: Repasa las ecuaciones cinemáticaticas del tiro parabólico e investiga los atributos `xaxis` y `yaxis` para poder fijar los ejes de la gráfica durante la animación."""
 
-# ╔═╡ 50f7f46b-081e-4b07-94af-1331b33a7c7f
-# Tu código (comentado) va aquí :D
+# ╔═╡ f46f2f19-66a5-49a7-a317-444015edf261
+
+
+# ╔═╡ fbf0212d-f663-46c6-aa14-e4228b7197dc
+begin
+
+default(legend = false)
+h1 = 2   
+r = 2
+x1 = 45 
+t1 = 10
+
+	Y(t) = h1+ r*sin(x1)*t - ((9.81*t^2)/2)  
+	X(t) = r*cos(x1)*t
+	xy(t) = (r*cos(x1)*t, h1+ r*sin(x1)*t - ((9.81*t^2)/2))
+	
+	@gif for t in 0:0.1:t1
+		plot(xy.(range(-(2), 0, step =0.1) .+t), lw =3, ls = :dot, xlabel = L"Distancia", 
+			ylabel = L"Altura", color = :gist_rainbow)
+		scatter!([X(t)], [Y(t)], marker = 6, title = L"Tiro Parabolico", c=:pink)
+
+
+		XMax = r*cos(x1)*((r*sin(x1) + ((r*sin(x1))^2 + 2*(9.81)*(h1))^(1/2))/(9.81))         
+		YMax = h1 + ((r^2)*(sin(x1))^2)/(2*9.81)
+	
+		xlims!(0,XMax + 0.5)                                                          
+		ylims!(0,YMax + 0.5) 
+
+
+	end
+end
+
 
 # ╔═╡ 59ec3890-303c-436a-8043-8e6bc9c427ed
 md"**Ejercicio** Crea una función que tome parámetros `h`, `r`, `θ` y `t`, y haga lo descrito en el Ejercicio anterior."
@@ -485,12 +516,57 @@ md"**Ejercicio** Crea una función que tome parámetros `h`, `r`, `θ` y `t`, y 
 # ╔═╡ c3264b4d-81b1-4e0c-9205-ff818665788c
 # Tu código (comentado) va aquí :D
 
+function TiroParabolico(H, r, θ, t)                         #Definimos la funcion "TiroParabolico" con sus respectivos parámetros de entrada 
+	                                                        #Lo siguiente del código es igual al de la celda anterior, sin embargo, se a los parámetros de entrada definidos en la función
+
+default(legend = false)
+
+	Y(t) = H + r*sin(θ)*t - ((9.81*t^2)/2)                  #Definimos las funciones de tiro parabólico 
+	X(t) = r*cos(θ)*t
+	xy(t) = (r*cos(θ)*t, H+ r*sin(θ)*t - ((9.81*t^2)/2))
+	
+	@gif for t in 0:0.1:5                                                                       #Con @gif se anima el movimiento de la partícula en tiro parabólico 
+		plot(xy.(range(-(3), 0, step =0.1) .+t), lw =3, ls = :dot, xlabel = L"Distancia",       #Con plot y scatter graficamos el movimiento de la partícula como su rastro 
+			ylabel = L"Altura", color = :gist_rainbow)
+		scatter!([X(t)], [Y(t)], marker = 6, title = L"Tiro Parabolico", c=:pink)
+
+
+		XMax = r*cos(θ)*((r*sin(θ) + ((r*sin(θ))^2 + 2*(9.81)*(H))^(1/2))/(9.81))               #Se calcularon la distancia y altura máximas con el propósito de delimitar los ejes       
+		YMax = H + ((r^2)*(sin(θ))^2)/(2*9.81)
+	
+		xlims!(0,XMax + 0.5)                                                          
+		ylims!(0,YMax + 0.5) 
+
+
+	end
+end                                                                                             #Finamilamos el código que define la función 
+
+
+# ╔═╡ f913a4c6-468f-4bb7-a4cd-975ce8ca715e
+TiroParabolico(3, 5, 70, 5)
+
+
 # ╔═╡ 77aacd79-26e3-40c2-ac22-f9121aac4155
 md"""**Ejercicio** Crea una animación de cómo la superficie obtenida de la función $h(x,y) = \cos(x) + \sin(y)$ se desplaza hacia el eje Y.
 """
 
 # ╔═╡ 4e68ad0c-17ef-41f7-b9fe-8561415bb7f2
-# Tu código (comentado) va aquí :D
+begin
+
+	default(legend = false)                                               #Primero quitamos todas las leyendas en la gráfica, pues no son necesarias en este caso 
+x = y = range(-5, 5, length = 40)                                         #Definimos un rango de valores que tomaran "x" y "y", cabe mencionar que no definimos la función h(x,y)
+n = 100                                                                   #pues se definió en celdas anteriores.                                   
+                                                                          # "n" es la variable que fija la rapidez con la que se moverá la grafica en el git 
+	@gif for i in range(0, stop = 2π, length = n)
+    	f(x, y) = cos(x + 10sin(i)) + sin(y)                                  #En esta parte del código determinamos la función, obsérvese que se agregó un 10sin(i) con i de o a 2pi
+                                                                              #con el fin de que la grafica se mueva hacia el eje y (tanto parte positiva como negativa) periódicamente
+		p = plot(x, y, f, st = [:surface], xlabel = L"x", ylabel = L"y",      #o sea que le asignamos una fase periódica
+			zlabel = L"z", title = L"h(x,y)=cos(x)+sen(y)")                   #Con plot trazamos la función con sus respectivas características como el color, título, nombres de ejes, etc. 
+		plot!(p[1], camera = (10 * (1 + cos(i)), 40))                         #La función camera nos ayudará a mover los ejes para que se aprecie mejor el movimiento del git 
+	
+
+	end
+end
 
 # ╔═╡ 88299b4d-2a7d-4c18-956e-c6e75473c658
 md" ## Recursos complementarios
@@ -520,7 +596,7 @@ PlutoUI = "~0.7.38"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.8.4"
+julia_version = "1.8.5"
 manifest_format = "2.0"
 project_hash = "77e2734aeac55d5109eeed492b1ea958eae44caf"
 
@@ -1511,9 +1587,11 @@ version = "0.9.1+5"
 # ╠═765a0e10-4217-4a50-8fb1-e46bee83aaa6
 # ╟─abbce622-7912-40ee-8632-261b5129dcb4
 # ╟─7577805b-1d52-47e4-aa45-2652943db1cf
-# ╠═50f7f46b-081e-4b07-94af-1331b33a7c7f
+# ╠═f46f2f19-66a5-49a7-a317-444015edf261
+# ╠═fbf0212d-f663-46c6-aa14-e4228b7197dc
 # ╟─59ec3890-303c-436a-8043-8e6bc9c427ed
 # ╠═c3264b4d-81b1-4e0c-9205-ff818665788c
+# ╠═f913a4c6-468f-4bb7-a4cd-975ce8ca715e
 # ╟─77aacd79-26e3-40c2-ac22-f9121aac4155
 # ╠═4e68ad0c-17ef-41f7-b9fe-8561415bb7f2
 # ╟─88299b4d-2a7d-4c18-956e-c6e75473c658
