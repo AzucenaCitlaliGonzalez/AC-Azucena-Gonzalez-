@@ -483,31 +483,32 @@ Sugerencia: Repasa las ecuaciones cinemáticaticas del tiro parabólico e invest
 # ╔═╡ fbf0212d-f663-46c6-aa14-e4228b7197dc
 begin
 
-default(legend = false)
-h1 = 2   
+default(legend = false)                                                                          #Primero quitamos todas las leyendas en la gráfica, pues no son necesarias en este caso
+h1 = 2                                                                                           #Posteriormente se declararon las variables requeridas  
 r = 2
-x1 = 45 
+x1 = 45 #Angulo
 t1 = 10
 
-	Y(t) = h1+ r*sin(x1)*t - ((9.81*t^2)/2)  
-	X(t) = r*cos(x1)*t
-	xy(t) = (r*cos(x1)*t, h1+ r*sin(x1)*t - ((9.81*t^2)/2))
-	
-	@gif for t in 0:0.1:t1
-		plot(xy.(range(-(2), 0, step =0.1) .+t), lw =3, ls = :dot, xlabel = L"Distancia", 
-			ylabel = L"Altura", color = :gist_rainbow)
-		scatter!([X(t)], [Y(t)], marker = 6, title = L"Tiro Parabolico", c=:pink)
+Y(t) = h1+ r*sin(x1)*t - ((9.81*t^2)/2)                                                      #Definimos las funciones de posición vertical (y) y horizontal (x) de tiro parabólico
+X(t) = r*cos(x1)*t
+xy(t) = (r*cos(x1)*t, h1+ r*sin(x1)*t - ((9.81*t^2)/2))                                      #Notese que en la función xy(t) es la fusión de las funciones de posición
+
+	@gif for t in 0:0.1:t1                                                                   #Ponemos un rango de valores que tomara t en intervalos de 0.1 y con @git animamos el movimiento
+	plot(xy.(range(-(2), 0, step =0.1) .+t), lw =3, ls = :dot, xlabel = L"Distancia",        #Con la función Plots graficamos un rastro que deja la partícula en movimiento
+	ylabel = L"Altura", color = :gist_rainbow)
+	scatter!([X(t)], [Y(t)], marker = 6, title = L"Tiro Parabolico", c=:pink)                #Ahora con scatter nos graficará el recorrido de la partícula a lo largo del tiro parabólico
 
 
-		XMax = r*cos(x1)*((r*sin(x1) + ((r*sin(x1))^2 + 2*(9.81)*(h1))^(1/2))/(9.81))         
-		YMax = h1 + ((r^2)*(sin(x1))^2)/(2*9.81)
-	
-		xlims!(0,XMax + 0.5)                                                          
-		ylims!(0,YMax + 0.5) 
+	XMax = r*cos(x1)*((r*sin(x1) + ((r*sin(x1))^2 + 2*(9.81)*(h1))^(1/2))/(9.81))            #Calculamos la altura y la distancia máximas que puede alcanzar la partícula para poder
+	YMax = h1 + ((r^2)*(sin(x1))^2)/(2*9.81)                                                 #delimitar los ejes con las funciones xlims! y ylims!
+
+	xlims!(0,XMax + 0.5)                                                          
+	ylims!(0,YMax + 0.5)
 
 
 	end
 end
+
 
 
 # ╔═╡ 59ec3890-303c-436a-8043-8e6bc9c427ed
