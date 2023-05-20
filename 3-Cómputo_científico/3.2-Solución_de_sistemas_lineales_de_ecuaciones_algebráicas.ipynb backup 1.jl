@@ -96,12 +96,7 @@
    "id": "27b76adf",
    "metadata": {},
    "source": [
-    "\\begin{align*}\n",
-    "    a'_{n-1,n-1} x_{n-1} + a'_{n-1n}x_n &= b'_{n-1} \\\\\n",
-    "    a'_{n-1,n-1} x_{n-1} + a'_{n-1n}(\\frac{b'_n}{a'_{nn}}) &= b'_{n-1} \\\\ \n",
-    "    x_{n-1} &= \\frac{b'_{n-1} - a'_{n-1n}(\\frac{b'_n}{a'_{nn}})}{a'_{n-1,n-1}} \\\\\n",
-    "    x_{n-1} &= \\frac{a'_{nn} b'_{n-1} - a'_{n-1n} b'_n}{(a'_{nn})(a'_{n-1,n-1})} \\\\\n",
-    "\\end{align*}\n"
+    "_Escribe tu procedimiento aquí._"
    ]
   },
   {
@@ -291,7 +286,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 4,
+   "execution_count": 200,
    "id": "8afe23d4",
    "metadata": {},
    "outputs": [
@@ -301,7 +296,7 @@
        "retropropagacion (generic function with 1 method)"
       ]
      },
-     "execution_count": 4,
+     "execution_count": 200,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -309,19 +304,18 @@
    "source": [
     "#RETROPOTAGACION \n",
     "function retropropagacion(M)\n",
-    "   n, m = size(M)              #Size nos dará las dimensiones de la matriz M \n",
-    "    x = zeros(n,1)             #Colocamos una matriz de ceros para ir remplazando los valores en ella \n",
-    "    x[n] = M[n,n+1]/M[n,n]     #Como M es una matriz triangular, es el despeje de la última incógnita en el último renglón \n",
+    "   n, m = size(M)\n",
+    "    x = zeros(n,1) \n",
+    "    x[n] = M[n,n+1]/M[n,n]\n",
     "    \n",
-    "    for i in n-1:-1:1          #Con el primer ciclo for nos ubicaremos en los renglones u con el segundo en las colunas, \n",
-    "        suma = 0               #notese qué i y j irán disminuyendo en una unidad \n",
+    "    for i in n-1:-1:1\n",
+    "        suma = 0\n",
     "        for j in n:-1:i+1\n",
-    "            suma = suma + M[i,j]*x[j]  #Durabnte el ciclo for reasignaremos un valor a la suma donde a la columna n-1 la\n",
-    "                                       #multiplicaremos por la incógnita x[n], posteriormente haremos lo mismo pero con la \n",
-    "        end                            #columna n-2 serán multiplica por la incógnita Xn-1 y así sucesivamente\n",
-    "    x[i] = (M[i,n+1]-suma)/M[i,i]      #En este paso le asignamos a al vector x el valor despejado, el cual será multiplicado a una columna \n",
+    "            suma = suma + M[i,j]*x[j]\n",
+    "        end\n",
+    "    x[i] = (M[i,n+1]-suma)/M[i,i]\n",
     "    end \n",
-    "     println(x)                        #Imprimimos el vector solucion \n",
+    "     println(x)\n",
     "end\n",
     "   \n",
     "    "
@@ -359,7 +353,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 7,
+   "execution_count": 239,
    "id": "82a63dc1",
    "metadata": {},
    "outputs": [
@@ -369,7 +363,7 @@
        "pivote (generic function with 1 method)"
       ]
      },
-     "execution_count": 7,
+     "execution_count": 239,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -378,11 +372,11 @@
     "function pivote(M, i, j)\n",
     "    n,m = size(M) \n",
     "    \n",
-    "    for k in 1:n-1                               #Usamos un ciclo for para poner movernos entre las entradas de la matriz \n",
-    "            if M[i,j] == 0                       #Usamos una condicional, pues en caso de que la entrada i y j de M sea 0 entonces \n",
-    "                for h in k:n                     #buscaremos entre los renglones de la columna una entrada diferente de cero \n",
-    "                    if M[h,j] != 0               #En caso de que haya una entrada diferente de cero   \n",
-    "                        M[[k,h],:] = M[[h,k],:]  #entonces intercambiamos el renglón donde está dicha entrada por el renglón donde se encuentra M[i,j] = 0\n",
+    "    for k in 1:n-1\n",
+    "            if M[i,j] == 0\n",
+    "                for h in k:n\n",
+    "                    if M[h,j] != 0\n",
+    "                        M[[k,h],:] = M[[h,k],:]\n",
     "                        \n",
     "                    end\n",
     "                    \n",
@@ -435,7 +429,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 12,
+   "execution_count": 220,
    "id": "05a174c4",
    "metadata": {},
    "outputs": [
@@ -456,7 +450,7 @@
        " 0.0   0.0   2.0   4.0"
       ]
      },
-     "execution_count": 12,
+     "execution_count": 220,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -465,37 +459,28 @@
     "function Reduccion1(M)\n",
     "    #NOTA IMPORTANTE: La entradas de la matriz M solo pueden ser numeros del tipo float64\n",
     "    n,m = size(M) \n",
-    "    A = M[1:n, 1:m-1]        #Hacemos una submatriz donde solo esten las entradas \"a_nn\" \n",
-    "    b = M[:, m]              #Y tambien separamos el vector b \n",
+    "    A = M[1:n, 1:m-1]\n",
+    "    b = M[:, m]\n",
     "    \n",
-    "    for k in 1:n                #Ciclo base for           \n",
-    "        for i in k+1:n          #Con ente i nos moveremos por los renglones \n",
-    "            z = A[i,k]/A[k,k]   #Esta división nos permitirá hacer los coeficientes nulos que sean necesarios para obtener una matriz triangular \n",
-    "            A[i,k] = 0          #a A[i,j] le asignamos cero, pues esta entrada será cero cuando En-E'_n-1(a_n,n-1/a'_n-1,n-1)-E'n-2(a_n,n-2/a'n-2,n-2)...  \n",
-    "            for j in k+1:n      #Ahora procedemos a restar cada entrada de En - E'_n-1(z), nótese que empezamos a hacer esto desde la columna j=k+1 \n",
-    "            A[i,j] = A[i,j] - ((z)*A[k,j]) #Pues ya le asignamos a A[i,k] = 0, por lo tanto, ya no es necesario restar dicha entrada \n",
+    "    for k in 1:n\n",
+    "        for i in k+1:n\n",
+    "            z = A[i,k]/A[k,k]\n",
+    "            A[i,k] = 0\n",
+    "            for j in k+1:n\n",
+    "            A[i,j] = A[i,j] - ((z)*A[k,j])\n",
     "            end\n",
-    "            b[i] = b[i] - ((z)*b[k])  #Notese que las mismas operaciones elementales que hacemos entre los renglones de la matriz A \n",
-    "        end                           #para obtener una matriz triangular se ben aplicar al vector b                    \n",
+    "            b[i] = b[i] - ((z)*b[k])\n",
+    "        end\n",
     "        \n",
     "    end\n",
-    "    println(\"Matriz triangular\")  \n",
-    "    println(A)                        #Por último imprimimos la matriz obtenida tanto a A \n",
-    "    [A b]                             #como a la matriz aumentada de A con b, esto lo hacemos concatenando A y b \n",
+    "    println(\"Matriz triangular\")\n",
+    "    println(A)\n",
+    "    [A b]\n",
     "end \n",
     "\n",
-    "#EJEMPLO\n",
     "C = [2.0 -3.0 1.0 7.0; 1.0 2.0 -1.0 -3.0; -3.0 1.0 2.0 0.0]\n",
     "Reduccion1(C)"
    ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "id": "5d868044",
-   "metadata": {},
-   "outputs": [],
-   "source": []
   },
   {
    "cell_type": "markdown",
@@ -507,7 +492,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 15,
+   "execution_count": 309,
    "id": "d3870ac0",
    "metadata": {},
    "outputs": [
@@ -527,7 +512,7 @@
        "  2.0"
       ]
      },
-     "execution_count": 15,
+     "execution_count": 309,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -535,10 +520,7 @@
    "source": [
     "function Solucion(M)\n",
     "    #NOTA IMPORTANTE: La entradas de la matriz M solo pueden ser numeros del tipo float64\n",
-    "    \n",
     "    #Reduccion \n",
-    "    #Observese que el código es el mismo que el de la funcion anterior pues buscamos triangularizar la matriz M para \n",
-    "    #despues reducirla, por lo tanto mis comentarios serian los mismo que para la funcion anterior \n",
     "    n,m = size(M) \n",
     "    A = M[1:n, 1:m-1]\n",
     "    b = M[:, m]\n",
@@ -554,15 +536,12 @@
     "        end\n",
     "        \n",
     "    end\n",
-    "    M = [A b]   #En este caso volveremos a concatenar A y b para poder llamar a la matriz aumentada nuevamente M por cuestiones prácticas \n",
-    "                #puesto que nos facilita el código de la parte de retropropagacion. \n",
+    "    M = [A b]\n",
     "    \n",
     "    #Retropropagacion \n",
-    "    #Al igual que en la primera parte, los comentarios serían los mismos que para la función \"Retropopagacion\" si alguna parte \n",
-    "    #en esta sección  no está comentado favor de ir a la sección de la función \"Retropopagacion\" para aclarar cualquier parte del código \n",
     "    x = zeros(n,1) \n",
-    "    x[n] = b[n]/A[n,n]   #La única diferencia con el código anterior de retropropagación es que en este caso al ya estar por separado \n",
-    "                         #los arreglos A y b entonces podemos reescribir el despeje de la última incógnita de forma que visualmente sea más entendible  \n",
+    "    x[n] = b[n]/A[n,n]\n",
+    "    \n",
     "    for i in n-1:-1:1\n",
     "        suma = 0\n",
     "        for j in n:-1:i+1\n",
@@ -730,8 +709,8 @@
     "    #\n",
     "    n,m = size(M)                   #Size nos dara las dimensiones de la matriz \n",
     "    \n",
-    "    Id = zeros(n,n)                 #En caso de que no funcione la celda anterior hay que crear una matriz identidad con un ciclo for \n",
-    "    for q in 1:n                    #donde aa cada elemento de la diagonal le asignemos el numero uno \n",
+    "    Id = zeros(n,n)                 #En caso de que no funcione la celda anterior hay que crear una matriz identidad co\n",
+    "    for q in 1:n\n",
     "        Id[q,q] = 1\n",
     "    end\n",
     "\n",

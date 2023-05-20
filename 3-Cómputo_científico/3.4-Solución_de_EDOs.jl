@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.19
+# v0.19.22
 
 using Markdown
 using InteractiveUtils
@@ -235,13 +235,36 @@ y devuelva el tamaño de paso $h$ correspondiente.
 """
 
 # ╔═╡ 643043b9-ae20-4071-9367-b282f2654fd7
-# Tu código va aquí :)
+begin 
+function tamañoDePaso(t0, tf, N)
+         h = (tf-t0)/N
+end 
+
+tamañoDePaso(2, 5, 5)
+end
 
 # ╔═╡ c84d2b95-07a4-45f8-8e7e-e372acc89cb8
 md" **Ejercicio** Crea una función `arregloUniforme` que tome los mismos argumentos que `tamañoDePaso` **más** un argumento `h` para el tamaño de paso y devuelva un arreglo uniforme de números desde `t0` hasta `tf` con dicho tamaño de paso entre ellos. Esta función debe imprimir un mensaje de error si $N$ **no** es un entero positivo. "
 
 # ╔═╡ b0eb99e9-978a-4914-90a9-e05c73115e73
-# Tu código (comentado) va aquí :)
+function arregloUniforme(t0, tf, N::Int64)
+	h = (tf-t0)/N
+	Z = zeros(N+1)
+	Z[1,1] = t0
+	
+	for x in 2:N+1
+		Z[x,1] = t0 + h 
+		t0 = t0 + h 
+	end 
+	Z
+end 
+
+
+
+# ╔═╡ 7687c4cb-3d2c-4e72-85fd-45ad23270a3a
+arregloUniforme(1, 5, 6)
+
+
 
 # ╔═╡ fa999314-0038-498a-ac9e-3ce04a9435a3
 md""" **Ejercicio** Crea una función `paso_euler` que tome argumentos `ti`, `xti`, `g` y `h`, donde
@@ -256,7 +279,18 @@ y devuelva una aproximación de $x(t_{i+1})$.
 """
 
 # ╔═╡ ecf4e2e8-821d-4e32-82d8-5eaec50363c3
-# Tu código (comentado) va aquí :)
+function paso_euler(ti, xti, g, h)
+	X = xti + h*(g.(ti, xti))  #Colocamos la expresion para calcular una aproxumacion a la solucion de la ecuacion g 
+	X
+end 
+
+
+# ╔═╡ e2ee6208-db9f-4a20-999c-8091641c2bc3
+begin
+g(t,y) = 3 + 2*t - (1/2)*y
+g(t,y) = 3 + 2*t - (1/2)*y
+paso_euler(0, 1, g, 0.1)
+end
 
 # ╔═╡ 1ec8d06d-160f-49de-a1aa-25c9d17cce64
 md""" **Ejercicio** Crea una función `euler` que tome argumentos `g`, `xt0` y `t`, donde
@@ -270,28 +304,84 @@ y devuelva un arreglo con `xt0` y los valores aproximados de $x(t_i)$ para $1\le
 """
 
 # ╔═╡ 7c8c2188-3173-4202-8ba4-83554831d940
-# Tu código (comentado) va aquí :)
+begin 
+	function euler(g, xt0, t)
+		n = length(t)
+		T = zeros(n) 
+		T[1] = xt0 
+
+		for i in 1:n-1
+			h = t[i+1] - t[i]
+			T[i+1] = T[i] + h*(g.(t[i], T[i]))
+		end 
+			
+		println("NOTA: el primer valor del arreglo es xt0")
+		println("Aproximacion: $T")
+	end 
+	
+g1(t,y) = (0.4)*t*y
+t2 = [1.0, 1.1, 1.2, 1.3, 1.4]
+euler(g1, 1, t2)
+end 
 
 # ╔═╡ 1dc4a3c3-6b1c-4024-bfaf-ce72f5533209
 md"""
 
 **Ejercicio** En caso de que la función $g$ de la EDO $(2)$ sólo dependa del tiempo, ¿qué operación matemática estaríamos llevando a cabo al aplicar el método de Euler?
 
-_Tu respuesta va aquí._
+_Estamos evaluando una función en un punto menos la derivada de dicha función evaluada en ese punto._
 
 Verifica que tu implementación del método de Euler sea correcta aplicándola a alguna función `g` sencilla que sólo dependa del tiempo y comparando los resultados obtenidos con la solución analítica; recuerda que debes imponer una condición inicial.
 
 """
 
-# ╔═╡ d821fc74-b60f-4571-bd82-44b4f7ece230
-#= Tu código (comentado) va aquí :)
-   También puedes agregar celdas para discutir tus resultados. =#
+# ╔═╡ d4a48adf-f8ad-44fd-ba19-b6bcfd8be8f4
+begin 
+	g2(t,y) = (0.5)*t
+	t3 = arregloUniforme(1, 2, 10) 
+	println(t3)
+	euler(g2, 1, t3)
+end
 
 # ╔═╡ c44f5b44-8899-444a-b5c4-f87e98102013
 md""" **Ejercicio** Utiliza tu implementación del método de Euler para solucionar el problema de condiciones iniciales $(1),(2)$. Grafica tu resultado junto con la gráfica de la solución analítica encontrada en el **Ejemplo** de la sección "Condiciones iniciales" y haz interactivo el parámetro $N$ para observar cómo cambia la aproximación que da tu solución numérica de la solución analítica en función del número de puntos utilizados en el intervalo $[t_0,t_f]$. """
 
+# ╔═╡ bed711f7-4c15-46c3-989e-07a6f8e4514e
+@bind N Slider(1:1:50, default = 1)
+
+# ╔═╡ 2dcbe052-12c9-43b6-87d3-7aa9b4d349dc
+begin 
+	function euler1(g, xt0, t)
+		n = length(t)
+		T = zeros(n) 
+		T[1] = xt0 
+
+		for i in 1:n-1
+			h = t[i+1] - t[i]
+			T[i+1] = T[i] + h*(g.(t[i], T[i]))
+		end 
+			
+		T
+	end 
+	
+end 
+
 # ╔═╡ 80b45143-b908-4f89-bb6f-1cb500529ea9
-# Tu código (comentado) va aquí :)
+begin
+	t0 = arregloUniforme(0, 1, N) 
+	g0(t,y) = y 
+	eu = euler1(g0, 5, t0) 
+	
+	#Comparacion entre el ejemplo de condiciones iniciales (1), (2) 
+    plot(-1:0.05:1, x, ylims = (-10,10), label = L"$Ce^t$")     # Graficamos a la función x de -1 a 9 (Resultado analítico)
+	scatter!([t0],[eu])                                         # Ahora graficamos las aproximaciones obtenidas con la funcion "euler"
+	vline!([0,0], color = "grey", style = :dash, label = false) # agregamos una línea punteada vertical y una
+	hline!([0,0], color = "grey", style = :dash, label = false) # línea punteada horizontal en el origen, y
+	#scatter!([0],[5], label = L"(0,5)")     
+	
+
+	
+end
 
 # ╔═╡ e0081798-1e7e-47b3-a7d2-1d0f29d59990
 md""" ## Nota final
@@ -339,7 +429,7 @@ PlutoUI = "~0.7.39"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.8.4"
+julia_version = "1.8.5"
 manifest_format = "2.0"
 project_hash = "02e70b7d926cc3868981bc53aa675eecda1ec259"
 
@@ -1322,13 +1412,17 @@ version = "0.9.1+5"
 # ╠═643043b9-ae20-4071-9367-b282f2654fd7
 # ╟─c84d2b95-07a4-45f8-8e7e-e372acc89cb8
 # ╠═b0eb99e9-978a-4914-90a9-e05c73115e73
+# ╠═7687c4cb-3d2c-4e72-85fd-45ad23270a3a
 # ╟─fa999314-0038-498a-ac9e-3ce04a9435a3
 # ╠═ecf4e2e8-821d-4e32-82d8-5eaec50363c3
+# ╠═e2ee6208-db9f-4a20-999c-8091641c2bc3
 # ╟─1ec8d06d-160f-49de-a1aa-25c9d17cce64
 # ╠═7c8c2188-3173-4202-8ba4-83554831d940
 # ╟─1dc4a3c3-6b1c-4024-bfaf-ce72f5533209
-# ╠═d821fc74-b60f-4571-bd82-44b4f7ece230
+# ╠═d4a48adf-f8ad-44fd-ba19-b6bcfd8be8f4
 # ╟─c44f5b44-8899-444a-b5c4-f87e98102013
+# ╠═bed711f7-4c15-46c3-989e-07a6f8e4514e
+# ╠═2dcbe052-12c9-43b6-87d3-7aa9b4d349dc
 # ╠═80b45143-b908-4f89-bb6f-1cb500529ea9
 # ╟─e0081798-1e7e-47b3-a7d2-1d0f29d59990
 # ╟─84f733e5-8e7a-4df7-880d-49ca09683257
